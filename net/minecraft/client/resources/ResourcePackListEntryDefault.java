@@ -1,0 +1,81 @@
+package net.minecraft.client.resources;
+
+import com.google.gson.JsonParseException;
+import net.minecraft.client.gui.GuiScreenResourcePacks;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.data.PackMetadataSection;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+
+public class ResourcePackListEntryDefault extends ResourcePackListEntry {
+    private static final Logger logger = LogManager.getLogger();
+    private final IResourcePack field_148320_d;
+    private final ResourceLocation resourcePackIcon;
+
+    public ResourcePackListEntryDefault(GuiScreenResourcePacks resourcePacksGUIIn) {
+        super(resourcePacksGUIIn);
+        field_148320_d = mc.getResourcePackRepository().rprDefaultResourcePack;
+        DynamicTexture dynamictexture;
+
+        try {
+            if (field_148320_d.getPackImage() != null) {
+                dynamictexture = new DynamicTexture(field_148320_d.getPackImage());
+            } else dynamictexture = TextureUtil.missingTexture;
+        } catch (IOException var4) {
+            dynamictexture = TextureUtil.missingTexture;
+        }
+
+        resourcePackIcon = mc.getTextureManager().getDynamicTextureLocation("texturepackicon", dynamictexture);
+    }
+
+    protected int func_183019_a() {
+        return 1;
+    }
+
+    protected String func_148311_a() {
+        try {
+            PackMetadataSection packmetadatasection = field_148320_d.getPackMetadata(mc.getResourcePackRepository().rprMetadataSerializer, "pack");
+
+            if (packmetadatasection != null) {
+                return packmetadatasection.getPackDescription().getFormattedText();
+            }
+        } catch (JsonParseException | IOException jsonparseexception) {
+            logger.error("Couldn't load metadata info", jsonparseexception);
+        }
+
+        return EnumChatFormatting.RED + "Missing " + "pack.mcmeta" + " :(";
+    }
+
+    protected boolean func_148309_e() {
+        return false;
+    }
+
+    protected boolean func_148308_f() {
+        return false;
+    }
+
+    protected boolean func_148314_g() {
+        return false;
+    }
+
+    protected boolean func_148307_h() {
+        return false;
+    }
+
+    protected String func_148312_b() {
+        return "Default";
+    }
+
+    protected void func_148313_c() {
+        mc.getTextureManager().bindTexture(resourcePackIcon);
+    }
+
+    protected boolean func_148310_d() {
+        return false;
+    }
+}
